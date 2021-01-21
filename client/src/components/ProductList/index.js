@@ -1,27 +1,41 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useQuery } from '@apollo/react-hooks';
+
+import {useStoreContext} from '../../utils/GlobalState';
+import {UPDATE_PRODUCTS} from '../../utils/actions';
 
 import ProductItem from "../ProductItem";
 import { QUERY_PRODUCTS } from "../../utils/queries";
 import spinner from "../../assets/spinner.gif"
 
-function ProductList({ currentCategory }) {
-  const { loading, data } = useQuery(QUERY_PRODUCTS);
 
-  const products = data?.products || [];
+function ProductList() {
+ const [state, dispatch] = useStoreContext();
 
-  function filterProducts() {
-    if (!currentCategory) {
-      return products;
-    }
+ const {currentCategory} = state;
 
-    return products.filter(product => product.category._id === currentCategory);
-  }
+ const {loading, data} = useQuery(QUERY_PRODUCTS);
+
+ useEffect(() => {
+   if (data) {
+     dispatch({
+       type: UPDATE_PRODUCTS,
+       products: data.products
+     });
+   }
+ }, [data, dispatch]);
+
+ function filterProducts() {
+   if(!currentCategory) {
+     return state.products;
+   }
+   return state.products.filter(product => product.category._id === currentCategory);
+ }
 
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
-      {products.length ? (
+      {state.products.length ? (
         <div className="flex-row">
             {filterProducts().map(product => (
                 <ProductItem
