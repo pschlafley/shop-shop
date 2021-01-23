@@ -18,7 +18,6 @@ function CategoryMenu() {
   const dispatch = useDispatch();
 
   const { categories } = state;
-  console.log('categories: ', categories)
 
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
